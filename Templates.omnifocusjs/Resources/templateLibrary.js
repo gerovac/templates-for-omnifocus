@@ -242,6 +242,12 @@
             difference
           )
         }
+        if (task.plannedDate !== null) {
+          task.plannedDate = Calendar.current.dateByAddingDateComponents(
+            task.plannedDate,
+            difference
+          )
+        }
         if (task.deferDate !== null) {
           task.deferDate = Calendar.current.dateByAddingDateComponents(
             task.deferDate,
@@ -253,7 +259,7 @@
 
     // backward-compatible method - using assigned dates
     let oldDate = null
-    if (created.dueDate !== null || created.deferDate !== null) {
+    if (created.dueDate !== null || created.deferDate !== null || created.plannedDate !== null) {
       const dueForm = new Form()
       if (created.dueDate !== null) {
         oldDate = created.dueDate
@@ -265,8 +271,12 @@
         dueForm.addField(
           new Form.Field.Date('newDate', 'Defer date:', oldDate, null)
         )
+      } else if (created.plannedDate !== null) {
+        oldDate = created.plannedDate
+        dueForm.addField(
+          new Form.Field.Date('newDate', 'Planned date:', oldDate, null)
+        )
       }
-
       const dueFormPromise = dueForm.show('Date for new project', 'Continue')
       dueFormPromise.then((formObject) => {
         adjustDates(oldDate, formObject.values.newDate, created)
@@ -288,6 +298,13 @@
       task.note = task.note.replace(task.note.match(/\$DEFER=(.*?)$/m)[0], '')
     })
 
+    const tasksWithPlannedDates = [created, ...created.flattenedTasks].filter(task => task.note.includes('$PLAN='))
+    tasksWithPlannedDates.forEach(task => {
+      const planString = task.note.match(/\$PLAN=(.*?)$/m)[1]
+      task.plannedDate = Formatter.Date.withStyle(Formatter.Date.Style.Full).dateFromString(planString)
+      task.note = task.note.replace(task.note.match(/\$PLAN=(.*?)$/m)[0], '')
+    })
+    
     return created
   }
 

@@ -2,8 +2,8 @@
   "defaultLocale": "en",
   "identifier": "com.KaitlinSalzke.Templates",
   "author": "Kaitlin Salzke",
-  "description": "An OmniFocus plug-in that enables projects to be created from templates",
-  "version": "1.19.1",
+  "description": "An OmniFocus plug-in that enables projects to be created from templates. Gerovac fork.",
+  "version": "1.19.1.1",
   "actions": [
     {
       "identifier": "createFromTemplate",
